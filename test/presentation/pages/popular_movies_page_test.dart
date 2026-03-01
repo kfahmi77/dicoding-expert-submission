@@ -18,48 +18,49 @@ void main() {
     mockNotifier = MockPopularMoviesNotifier();
   });
 
-  Widget _makeTestableWidget(Widget body) {
+  Widget makeTestableWidget(Widget body) {
     return ChangeNotifierProvider<PopularMoviesNotifier>.value(
       value: mockNotifier,
-      child: MaterialApp(
-        home: body,
-      ),
+      child: MaterialApp(home: body),
     );
   }
 
-  testWidgets('Page should display center progress bar when loading',
-      (WidgetTester tester) async {
+  testWidgets('Page should display center progress bar when loading', (
+    WidgetTester tester,
+  ) async {
     when(mockNotifier.state).thenReturn(RequestState.Loading);
 
     final progressBarFinder = find.byType(CircularProgressIndicator);
     final centerFinder = find.byType(Center);
 
-    await tester.pumpWidget(_makeTestableWidget(PopularMoviesPage()));
+    await tester.pumpWidget(makeTestableWidget(PopularMoviesPage()));
 
     expect(centerFinder, findsOneWidget);
     expect(progressBarFinder, findsOneWidget);
   });
 
-  testWidgets('Page should display ListView when data is loaded',
-      (WidgetTester tester) async {
+  testWidgets('Page should display ListView when data is loaded', (
+    WidgetTester tester,
+  ) async {
     when(mockNotifier.state).thenReturn(RequestState.Loaded);
     when(mockNotifier.movies).thenReturn(<Movie>[]);
 
     final listViewFinder = find.byType(ListView);
 
-    await tester.pumpWidget(_makeTestableWidget(PopularMoviesPage()));
+    await tester.pumpWidget(makeTestableWidget(PopularMoviesPage()));
 
     expect(listViewFinder, findsOneWidget);
   });
 
-  testWidgets('Page should display text with message when Error',
-      (WidgetTester tester) async {
+  testWidgets('Page should display text with message when Error', (
+    WidgetTester tester,
+  ) async {
     when(mockNotifier.state).thenReturn(RequestState.Error);
     when(mockNotifier.message).thenReturn('Error message');
 
     final textFinder = find.byKey(Key('error_message'));
 
-    await tester.pumpWidget(_makeTestableWidget(PopularMoviesPage()));
+    await tester.pumpWidget(makeTestableWidget(PopularMoviesPage()));
 
     expect(textFinder, findsOneWidget);
   });

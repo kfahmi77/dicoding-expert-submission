@@ -1,0 +1,20 @@
+{
+  "adult": false,
+  "backdrop_path": "/backdrop.jpg",
+  "genres": [
+    {
+      "id": 18,
+      "name": "Drama"
+    }
+  ],
+  "id": 100,
+  "original_name": "Original Name",
+  "overview": "overview",
+  "poster_path": "/poster.jpg",
+  "first_air_date": "2020-01-01",
+  "number_of_episodes": 10,
+  "number_of_seasons": 1,
+  "name": "TV Name",
+  "vote_average": 8.1,
+  "vote_count": 123
+}

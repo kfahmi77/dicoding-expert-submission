@@ -1,7 +1,12 @@
 import 'package:ditonton/data/models/movie_table.dart';
+import 'package:ditonton/data/models/genre_model.dart';
+import 'package:ditonton/data/models/tv_series_detail_model.dart';
+import 'package:ditonton/data/models/tv_series_table.dart';
 import 'package:ditonton/domain/entities/genre.dart';
 import 'package:ditonton/domain/entities/movie.dart';
 import 'package:ditonton/domain/entities/movie_detail.dart';
+import 'package:ditonton/domain/entities/tv_series.dart';
+import 'package:ditonton/domain/entities/tv_series_detail.dart';
 
 final testMovie = Movie(
   adult: false,
@@ -57,3 +62,73 @@ final testMovieMap = {
   'posterPath': 'posterPath',
   'title': 'title',
 };
+
+final testTvSeries = TvSeries(
+  adult: false,
+  backdropPath: '/backdrop.jpg',
+  genreIds: [18, 10765],
+  id: 100,
+  originalName: 'Original Name',
+  overview: 'overview',
+  popularity: 123.4,
+  posterPath: '/poster.jpg',
+  firstAirDate: '2020-01-01',
+  name: 'TV Name',
+  voteAverage: 8.1,
+  voteCount: 123,
+);
+
+final testTvSeriesList = [testTvSeries];
+
+final testTvSeriesDetail = TvSeriesDetail(
+  adult: false,
+  backdropPath: '/backdrop.jpg',
+  genres: [Genre(id: 18, name: 'Drama')],
+  id: 100,
+  originalName: 'Original Name',
+  overview: 'overview',
+  posterPath: '/poster.jpg',
+  firstAirDate: '2020-01-01',
+  numberOfEpisodes: 10,
+  numberOfSeasons: 1,
+  name: 'TV Name',
+  voteAverage: 8.1,
+  voteCount: 123,
+);
+
+final testWatchlistTvSeries = TvSeries.watchlist(
+  id: 100,
+  name: 'TV Name',
+  posterPath: '/poster.jpg',
+  overview: 'overview',
+);
+
+final testTvSeriesTable = TvSeriesTable(
+  id: 100,
+  name: 'TV Name',
+  posterPath: '/poster.jpg',
+  overview: 'overview',
+);
+
+final testTvSeriesMap = {
+  'id': 100,
+  'overview': 'overview',
+  'posterPath': '/poster.jpg',
+  'name': 'TV Name',
+};
+
+final testTvSeriesDetailResponse = TvSeriesDetailResponse(
+  adult: false,
+  backdropPath: '/backdrop.jpg',
+  genres: [GenreModel(id: 18, name: 'Drama')],
+  id: 100,
+  originalName: 'Original Name',
+  overview: 'overview',
+  posterPath: '/poster.jpg',
+  firstAirDate: '2020-01-01',
+  numberOfEpisodes: 10,
+  numberOfSeasons: 1,
+  name: 'TV Name',
+  voteAverage: 8.1,
+  voteCount: 123,
+);

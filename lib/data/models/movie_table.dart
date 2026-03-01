@@ -8,7 +8,7 @@ class MovieTable extends Equatable {
   final String? posterPath;
   final String? overview;
 
-  MovieTable({
+  const MovieTable({
     required this.id,
     required this.title,
     required this.posterPath,
@@ -16,32 +16,32 @@ class MovieTable extends Equatable {
   });
 
   factory MovieTable.fromEntity(MovieDetail movie) => MovieTable(
-        id: movie.id,
-        title: movie.title,
-        posterPath: movie.posterPath,
-        overview: movie.overview,
-      );
+    id: movie.id,
+    title: movie.title,
+    posterPath: movie.posterPath,
+    overview: movie.overview,
+  );
 
   factory MovieTable.fromMap(Map<String, dynamic> map) => MovieTable(
-        id: map['id'],
-        title: map['title'],
-        posterPath: map['posterPath'],
-        overview: map['overview'],
-      );
+    id: map['id'],
+    title: map['title'],
+    posterPath: map['posterPath'],
+    overview: map['overview'],
+  );
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'title': title,
-        'posterPath': posterPath,
-        'overview': overview,
-      };
+    'id': id,
+    'title': title,
+    'posterPath': posterPath,
+    'overview': overview,
+  };
 
   Movie toEntity() => Movie.watchlist(
-        id: id,
-        overview: overview,
-        posterPath: posterPath,
-        title: title,
-      );
+    id: id,
+    overview: overview,
+    posterPath: posterPath,
+    title: title,
+  );
 
   @override
   // TODO: implement props
