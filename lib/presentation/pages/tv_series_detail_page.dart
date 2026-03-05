@@ -4,10 +4,10 @@ import 'package:ditonton/common/state_enum.dart';
 import 'package:ditonton/domain/entities/genre.dart';
 import 'package:ditonton/domain/entities/tv_series.dart';
 import 'package:ditonton/domain/entities/tv_series_detail.dart';
-import 'package:ditonton/presentation/provider/tv_series_detail_notifier.dart';
+import 'package:ditonton/presentation/bloc/tv_series_detail/tv_series_detail_cubit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
-import 'package:provider/provider.dart';
 
 class TvSeriesDetailPage extends StatefulWidget {
   static const routeName = '/detail-tv-series';
@@ -26,30 +26,33 @@ class _TvSeriesDetailPageState extends State<TvSeriesDetailPage> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
-      final notifier = context.read<TvSeriesDetailNotifier>();
-      notifier.fetchTvSeriesDetail(widget.id);
-      notifier.loadWatchlistStatus(widget.id);
+      final cubit = context.read<TvSeriesDetailCubit>();
+      cubit.fetchTvSeriesDetail(widget.id);
+      cubit.loadWatchlistStatus(widget.id);
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Consumer<TvSeriesDetailNotifier>(
-        builder: (context, provider, child) {
-          if (provider.tvSeriesState == RequestState.Loading) {
+      body: BlocBuilder<TvSeriesDetailCubit, TvSeriesDetailState>(
+        builder: (context, state) {
+          if (state.tvSeriesState == RequestState.Loading) {
             return const Center(child: CircularProgressIndicator());
           }
-          if (provider.tvSeriesState == RequestState.Loaded) {
+          if (state.tvSeriesState == RequestState.Loaded &&
+              state.tvSeries != null) {
             return SafeArea(
               child: _DetailContent(
-                provider.tvSeries,
-                provider.tvSeriesRecommendations,
-                provider.isAddedToWatchlist,
+                tvSeries: state.tvSeries!,
+                recommendations: state.tvSeriesRecommendations,
+                isAddedWatchlist: state.isAddedToWatchlist,
+                recommendationState: state.recommendationState,
+                message: state.message,
               ),
             );
           }
-          return Text(provider.message);
+          return Center(child: Text(state.message));
         },
       ),
     );
@@ -57,15 +60,19 @@ class _TvSeriesDetailPageState extends State<TvSeriesDetailPage> {
 }
 
 class _DetailContent extends StatelessWidget {
-  const _DetailContent(
-    this.tvSeries,
-    this.recommendations,
-    this.isAddedWatchlist,
-  );
+  const _DetailContent({
+    required this.tvSeries,
+    required this.recommendations,
+    required this.isAddedWatchlist,
+    required this.recommendationState,
+    required this.message,
+  });
 
   final TvSeriesDetail tvSeries;
   final List<TvSeries> recommendations;
   final bool isAddedWatchlist;
+  final RequestState recommendationState;
+  final String message;
 
   @override
   Widget build(BuildContext context) {
@@ -103,32 +110,33 @@ class _DetailContent extends StatelessWidget {
                             const SizedBox(height: 12),
                             FilledButton(
                               onPressed: () async {
-                                final notifier = context
-                                    .read<TvSeriesDetailNotifier>();
+                                final cubit = context
+                                    .read<TvSeriesDetailCubit>();
                                 if (!isAddedWatchlist) {
-                                  await notifier.addWatchlist(tvSeries);
+                                  await cubit.addWatchlist(tvSeries);
                                 } else {
-                                  await notifier.removeFromWatchlist(tvSeries);
+                                  await cubit.removeFromWatchlist(tvSeries);
                                 }
 
                                 if (!context.mounted) return;
-                                final message = notifier.watchlistMessage;
+                                final watchlistMessage =
+                                    cubit.state.watchlistMessage;
 
-                                if (message ==
-                                        TvSeriesDetailNotifier
+                                if (watchlistMessage ==
+                                        TvSeriesDetailCubit
                                             .watchlistAddSuccessMessage ||
-                                    message ==
-                                        TvSeriesDetailNotifier
+                                    watchlistMessage ==
+                                        TvSeriesDetailCubit
                                             .watchlistRemoveSuccessMessage) {
                                   ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(content: Text(message)),
+                                    SnackBar(content: Text(watchlistMessage)),
                                   );
                                 } else {
                                   showDialog(
                                     context: context,
                                     builder: (context) {
                                       return AlertDialog(
-                                        content: Text(message),
+                                        content: Text(watchlistMessage),
                                       );
                                     },
                                   );
@@ -175,72 +183,62 @@ class _DetailContent extends StatelessWidget {
                             const SizedBox(height: 20),
                             Text('Recommendations', style: kHeading6),
                             const SizedBox(height: 8),
-                            Consumer<TvSeriesDetailNotifier>(
-                              builder: (context, data, child) {
-                                if (data.recommendationState ==
-                                    RequestState.Loading) {
-                                  return const Center(
-                                    child: CircularProgressIndicator(),
-                                  );
-                                }
-                                if (data.recommendationState ==
-                                    RequestState.Error) {
-                                  return Text(data.message);
-                                }
-                                if (data.recommendationState ==
-                                    RequestState.Loaded) {
-                                  if (recommendations.isEmpty) {
-                                    return const Text(
+                            if (recommendationState == RequestState.Loading)
+                              const Center(child: CircularProgressIndicator())
+                            else if (recommendationState == RequestState.Error)
+                              Text(message)
+                            else if (recommendationState == RequestState.Loaded)
+                              recommendations.isEmpty
+                                  ? const Text(
                                       'No recommendations available.',
                                       key: Key(
                                         'tv_series_recommendation_empty',
                                       ),
-                                    );
-                                  }
-                                  return SizedBox(
-                                    height: 150,
-                                    child: ListView.builder(
-                                      scrollDirection: Axis.horizontal,
-                                      itemBuilder: (context, index) {
-                                        final item = recommendations[index];
-                                        return Padding(
-                                          padding: const EdgeInsets.all(4),
-                                          child: InkWell(
-                                            onTap: () {
-                                              Navigator.pushReplacementNamed(
-                                                context,
-                                                TvSeriesDetailPage.routeName,
-                                                arguments: item.id,
-                                              );
-                                            },
-                                            child: ClipRRect(
-                                              borderRadius:
-                                                  const BorderRadius.all(
-                                                    Radius.circular(8),
-                                                  ),
-                                              child: CachedNetworkImage(
-                                                imageUrl:
-                                                    '$baseImageUrl${item.posterPath}',
-                                                placeholder: (context, url) =>
-                                                    const Center(
-                                                      child:
-                                                          CircularProgressIndicator(),
+                                    )
+                                  : SizedBox(
+                                      height: 150,
+                                      child: ListView.builder(
+                                        scrollDirection: Axis.horizontal,
+                                        itemCount: recommendations.length,
+                                        itemBuilder: (context, index) {
+                                          final item = recommendations[index];
+                                          return Padding(
+                                            padding: const EdgeInsets.all(4),
+                                            child: InkWell(
+                                              onTap: () {
+                                                Navigator.pushReplacementNamed(
+                                                  context,
+                                                  TvSeriesDetailPage.routeName,
+                                                  arguments: item.id,
+                                                );
+                                              },
+                                              child: ClipRRect(
+                                                borderRadius:
+                                                    const BorderRadius.all(
+                                                      Radius.circular(8),
                                                     ),
-                                                errorWidget:
-                                                    (context, url, error) =>
-                                                        const Icon(Icons.error),
+                                                child: CachedNetworkImage(
+                                                  imageUrl:
+                                                      '$baseImageUrl${item.posterPath}',
+                                                  placeholder: (context, url) =>
+                                                      const Center(
+                                                        child:
+                                                            CircularProgressIndicator(),
+                                                      ),
+                                                  errorWidget:
+                                                      (context, url, error) =>
+                                                          const Icon(
+                                                            Icons.error,
+                                                          ),
+                                                ),
                                               ),
                                             ),
-                                          ),
-                                        );
-                                      },
-                                      itemCount: recommendations.length,
-                                    ),
-                                  );
-                                }
-                                return const SizedBox();
-                              },
-                            ),
+                                          );
+                                        },
+                                      ),
+                                    )
+                            else
+                              const SizedBox(),
                             const SizedBox(height: 24),
                           ],
                         ),
@@ -278,7 +276,6 @@ class _DetailContent extends StatelessWidget {
   }
 
   String _showGenres(List<Genre> genres) {
-    final result = genres.map((genre) => genre.name).join(', ');
-    return result;
+    return genres.map((genre) => genre.name).join(', ');
   }
 }

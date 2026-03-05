@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:ditonton/common/constants.dart';
 import 'package:ditonton/common/state_enum.dart';
 import 'package:ditonton/domain/entities/tv_series.dart';
+import 'package:ditonton/presentation/bloc/tv_series_list/tv_series_list_cubit.dart';
 import 'package:ditonton/presentation/pages/about_page.dart';
 import 'package:ditonton/presentation/pages/popular_tv_series_page.dart';
 import 'package:ditonton/presentation/pages/search_tv_series_page.dart';
@@ -9,9 +10,8 @@ import 'package:ditonton/presentation/pages/top_rated_tv_series_page.dart';
 import 'package:ditonton/presentation/pages/tv_series_detail_page.dart';
 import 'package:ditonton/presentation/pages/watchlist_movies_page.dart';
 import 'package:ditonton/presentation/pages/watchlist_tv_series_page.dart';
-import 'package:ditonton/presentation/provider/tv_series_list_notifier.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class HomeTvSeriesPage extends StatefulWidget {
   const HomeTvSeriesPage({super.key});
@@ -26,8 +26,8 @@ class _HomeTvSeriesPageState extends State<HomeTvSeriesPage> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
-      final notifier = context.read<TvSeriesListNotifier>();
-      notifier
+      final cubit = context.read<TvSeriesListCubit>();
+      cubit
         ..fetchOnTheAirTvSeries()
         ..fetchPopularTvSeries()
         ..fetchTopRatedTvSeries();
@@ -109,15 +109,15 @@ class _HomeTvSeriesPageState extends State<HomeTvSeriesPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text('On The Air', style: kHeading6),
-              Consumer<TvSeriesListNotifier>(
-                builder: (context, data, child) {
-                  if (data.onTheAirState == RequestState.Loading) {
+              BlocBuilder<TvSeriesListCubit, TvSeriesListState>(
+                builder: (context, state) {
+                  if (state.onTheAirState == RequestState.Loading) {
                     return const Center(child: CircularProgressIndicator());
                   }
-                  if (data.onTheAirState == RequestState.Loaded) {
-                    return _TvSeriesList(data.onTheAirTvSeries);
+                  if (state.onTheAirState == RequestState.Loaded) {
+                    return _TvSeriesList(state.onTheAirTvSeries);
                   }
-                  return Text(data.message);
+                  return Text(state.message);
                 },
               ),
               _buildSubHeading(
@@ -126,15 +126,15 @@ class _HomeTvSeriesPageState extends State<HomeTvSeriesPage> {
                   Navigator.pushNamed(context, PopularTvSeriesPage.routeName);
                 },
               ),
-              Consumer<TvSeriesListNotifier>(
-                builder: (context, data, child) {
-                  if (data.popularTvSeriesState == RequestState.Loading) {
+              BlocBuilder<TvSeriesListCubit, TvSeriesListState>(
+                builder: (context, state) {
+                  if (state.popularTvSeriesState == RequestState.Loading) {
                     return const Center(child: CircularProgressIndicator());
                   }
-                  if (data.popularTvSeriesState == RequestState.Loaded) {
-                    return _TvSeriesList(data.popularTvSeries);
+                  if (state.popularTvSeriesState == RequestState.Loaded) {
+                    return _TvSeriesList(state.popularTvSeries);
                   }
-                  return Text(data.message);
+                  return Text(state.message);
                 },
               ),
               _buildSubHeading(
@@ -143,15 +143,15 @@ class _HomeTvSeriesPageState extends State<HomeTvSeriesPage> {
                   Navigator.pushNamed(context, TopRatedTvSeriesPage.routeName);
                 },
               ),
-              Consumer<TvSeriesListNotifier>(
-                builder: (context, data, child) {
-                  if (data.topRatedTvSeriesState == RequestState.Loading) {
+              BlocBuilder<TvSeriesListCubit, TvSeriesListState>(
+                builder: (context, state) {
+                  if (state.topRatedTvSeriesState == RequestState.Loading) {
                     return const Center(child: CircularProgressIndicator());
                   }
-                  if (data.topRatedTvSeriesState == RequestState.Loaded) {
-                    return _TvSeriesList(data.topRatedTvSeries);
+                  if (state.topRatedTvSeriesState == RequestState.Loaded) {
+                    return _TvSeriesList(state.topRatedTvSeries);
                   }
-                  return Text(data.message);
+                  return Text(state.message);
                 },
               ),
             ],

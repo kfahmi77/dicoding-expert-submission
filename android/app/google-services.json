@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "387210736422",
+    "project_id": "khoirul-fahmi",
+    "storage_bucket": "khoirul-fahmi.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:387210736422:android:5a4fc13ab39b8f137cc7e7",
+        "android_client_info": {
+          "package_name": "com.dicoding.ditonton"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "387210736422-0o1d889hr9t83l1re0frqdbinu4qgtjp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD5N9tBxAMcm09_4yg7-k-g2pjmsIT7CAU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "387210736422-0o1d889hr9t83l1re0frqdbinu4qgtjp.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,9 +1,9 @@
 import 'package:ditonton/common/state_enum.dart';
 import 'package:ditonton/common/utils.dart';
-import 'package:ditonton/presentation/provider/watchlist_tv_series_notifier.dart';
+import 'package:ditonton/presentation/bloc/watchlist_tv_series/watchlist_tv_series_cubit.dart';
 import 'package:ditonton/presentation/widgets/tv_series_card_list.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class WatchlistTvSeriesPage extends StatefulWidget {
   static const routeName = '/watchlist-tv-series';
@@ -23,7 +23,7 @@ class _WatchlistTvSeriesPageState extends State<WatchlistTvSeriesPage>
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
-      context.read<WatchlistTvSeriesNotifier>().fetchWatchlistTvSeries();
+      context.read<WatchlistTvSeriesCubit>().fetchWatchlistTvSeries();
     });
   }
 
@@ -41,7 +41,7 @@ class _WatchlistTvSeriesPageState extends State<WatchlistTvSeriesPage>
 
   @override
   void didPopNext() {
-    context.read<WatchlistTvSeriesNotifier>().fetchWatchlistTvSeries();
+    context.read<WatchlistTvSeriesCubit>().fetchWatchlistTvSeries();
   }
 
   @override
@@ -56,23 +56,23 @@ class _WatchlistTvSeriesPageState extends State<WatchlistTvSeriesPage>
       appBar: AppBar(title: const Text('Watchlist TV Series')),
       body: Padding(
         padding: const EdgeInsets.all(8),
-        child: Consumer<WatchlistTvSeriesNotifier>(
-          builder: (context, data, child) {
-            if (data.watchlistState == RequestState.Loading) {
+        child: BlocBuilder<WatchlistTvSeriesCubit, WatchlistTvSeriesState>(
+          builder: (context, state) {
+            if (state.watchlistState == RequestState.Loading) {
               return const Center(child: CircularProgressIndicator());
             }
-            if (data.watchlistState == RequestState.Loaded) {
+            if (state.watchlistState == RequestState.Loaded) {
               return ListView.builder(
+                itemCount: state.watchlistTvSeries.length,
                 itemBuilder: (context, index) {
-                  final tvSeries = data.watchlistTvSeries[index];
+                  final tvSeries = state.watchlistTvSeries[index];
                   return TvSeriesCard(tvSeries);
                 },
-                itemCount: data.watchlistTvSeries.length,
               );
             }
             return Center(
               key: const Key('error_message'),
-              child: Text(data.message),
+              child: Text(state.message),
             );
           },
         ),
