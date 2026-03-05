@@ -63,7 +63,8 @@ class DefaultFirebaseOptions {
     messagingSenderId: '387210736422',
     projectId: 'khoirul-fahmi',
     storageBucket: 'khoirul-fahmi.firebasestorage.app',
-    androidClientId: '387210736422-4hcag57tikmkh38q5sp6hurdrm3qh15n.apps.googleusercontent.com',
+    androidClientId:
+        '387210736422-4hcag57tikmkh38q5sp6hurdrm3qh15n.apps.googleusercontent.com',
     iosBundleId: 'com.dicoding.ditonton',
   );
 }

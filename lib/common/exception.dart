@@ -1,7 +1,1 @@
-class ServerException implements Exception {}
-
-class DatabaseException implements Exception {
-  final String message;
-
-  DatabaseException(this.message);
-}
+export 'package:core/common/exception.dart';

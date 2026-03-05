@@ -1,3 +1,1 @@
-import 'package:http/http.dart' as http;
-
-http.Client createPinnedHttpClient() => http.Client();
+export 'package:core/common/pinned_http_client_stub.dart';

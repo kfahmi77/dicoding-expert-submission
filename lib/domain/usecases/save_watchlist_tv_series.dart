@@ -1,14 +1,1 @@
-import 'package:dartz/dartz.dart';
-import 'package:ditonton/common/failure.dart';
-import 'package:ditonton/domain/entities/tv_series_detail.dart';
-import 'package:ditonton/domain/repositories/tv_series_repository.dart';
-
-class SaveWatchlistTvSeries {
-  final TvSeriesRepository repository;
-
-  SaveWatchlistTvSeries(this.repository);
-
-  Future<Either<Failure, String>> execute(TvSeriesDetail tvSeries) {
-    return repository.saveWatchlistTvSeries(tvSeries);
-  }
-}
+export 'package:tv_series/src/domain/usecases/save_watchlist_tv_series.dart';

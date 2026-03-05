@@ -1,6 +1,11 @@
 name: ditonton
 description: A new Flutter application.
 
+workspace:
+  - packages/core
+  - packages/movie
+  - packages/tv_series
+
 # The following line prevents the package from being accidentally published to
 # pub.dev using `pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
@@ -23,6 +28,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  core: ^1.0.0
+  movie: ^1.0.0
+  tv_series: ^1.0.0
 
   http: ^1.6.0
   provider: ^6.1.5+1

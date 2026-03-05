@@ -17,18 +17,51 @@ jobs:
         with:
           channel: stable
 
-      - name: Install dependencies
+      - name: Install lcov
+        run: sudo apt-get update && sudo apt-get install -y lcov
+
+      - name: Root pub get
         run: flutter pub get
 
-      - name: Analyze
+      - name: Analyze root
         run: flutter analyze
 
-      - name: Test
+      - name: Test root
         run: flutter test --coverage
+
+      - name: Analyze & test core module
+        run: |
+          cd packages/core
+          flutter pub get
+          flutter analyze
+          flutter test --coverage
+
+      - name: Analyze & test movie module
+        run: |
+          cd packages/movie
+          flutter pub get
+          flutter analyze
+          flutter test --coverage
+
+      - name: Analyze & test tv_series module
+        run: |
+          cd packages/tv_series
+          flutter pub get
+          flutter analyze
+          flutter test --coverage
+
+      - name: Merge coverage
+        run: |
+          mkdir -p coverage
+          : > coverage/lcov.modules.info
+          if [ -f coverage/lcov.info ]; then cat coverage/lcov.info >> coverage/lcov.modules.info; fi
+          if [ -f packages/core/coverage/lcov.info ]; then cat packages/core/coverage/lcov.info >> coverage/lcov.modules.info; fi
+          if [ -f packages/movie/coverage/lcov.info ]; then cat packages/movie/coverage/lcov.info >> coverage/lcov.modules.info; fi
+          if [ -f packages/tv_series/coverage/lcov.info ]; then cat packages/tv_series/coverage/lcov.info >> coverage/lcov.modules.info; fi
 
       - name: Upload coverage artifact
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: coverage-lcov
-          path: coverage/lcov.info
+          path: coverage/lcov.modules.info

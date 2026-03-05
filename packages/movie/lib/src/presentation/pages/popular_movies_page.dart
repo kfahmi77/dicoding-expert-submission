@@ -1,0 +1,55 @@
+import 'package:core/common/state_enum.dart';
+import 'package:movie/src/presentation/bloc/movie_list/movie_list_cubit.dart';
+import 'package:movie/src/presentation/widgets/movie_card_list.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+class PopularMoviesPage extends StatefulWidget {
+  static const routeName = '/popular-movie';
+
+  const PopularMoviesPage({super.key});
+
+  @override
+  State<PopularMoviesPage> createState() => _PopularMoviesPageState();
+}
+
+class _PopularMoviesPageState extends State<PopularMoviesPage> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      context.read<MovieListCubit>().fetchPopularMovies();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Popular Movies')),
+      body: Padding(
+        padding: const EdgeInsets.all(8),
+        child: BlocBuilder<MovieListCubit, MovieListState>(
+          builder: (context, state) {
+            if (state.popularMoviesState == RequestState.Loading) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            if (state.popularMoviesState == RequestState.Loaded) {
+              return ListView.builder(
+                itemCount: state.popularMovies.length,
+                itemBuilder: (context, index) {
+                  final movie = state.popularMovies[index];
+                  return MovieCard(movie);
+                },
+              );
+            }
+            return Center(
+              key: const Key('error_message'),
+              child: Text(state.message),
+            );
+          },
+        ),
+      ),
+    );
+  }
+}
