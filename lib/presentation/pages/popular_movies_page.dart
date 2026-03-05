@@ -14,15 +14,13 @@ class PopularMoviesPage extends StatefulWidget {
 }
 
 class _PopularMoviesPageState extends State<PopularMoviesPage> {
-  bool _hasFetched = false;
-
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    if (!_hasFetched) {
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
       context.read<PopularMoviesNotifier>().fetchPopularMovies();
-      _hasFetched = true;
-    }
+    });
   }
 
   @override

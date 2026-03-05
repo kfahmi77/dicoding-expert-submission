@@ -14,15 +14,13 @@ class OnTheAirTvSeriesPage extends StatefulWidget {
 }
 
 class _OnTheAirTvSeriesPageState extends State<OnTheAirTvSeriesPage> {
-  bool _hasFetched = false;
-
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    if (!_hasFetched) {
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
       context.read<OnTheAirTvSeriesNotifier>().fetchOnTheAirTvSeries();
-      _hasFetched = true;
-    }
+    });
   }
 
   @override

@@ -7,6 +7,7 @@ import 'package:ditonton/domain/usecases/get_watchlist_status_tv_series.dart';
 import 'package:ditonton/domain/usecases/remove_watchlist_tv_series.dart';
 import 'package:ditonton/domain/usecases/save_watchlist_tv_series.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/scheduler.dart';
 
 class TvSeriesDetailNotifier extends ChangeNotifier {
   static const watchlistAddSuccessMessage = 'Added to Watchlist';
@@ -44,9 +45,30 @@ class TvSeriesDetailNotifier extends ChangeNotifier {
   bool _isAddedToWatchlist = false;
   bool get isAddedToWatchlist => _isAddedToWatchlist;
 
+  void _notifySafely() {
+    SchedulerBinding? schedulerBinding;
+    try {
+      schedulerBinding = SchedulerBinding.instance;
+    } catch (_) {
+      schedulerBinding = null;
+    }
+
+    if (schedulerBinding != null &&
+        schedulerBinding.schedulerPhase ==
+            SchedulerPhase.persistentCallbacks) {
+      schedulerBinding.addPostFrameCallback((_) {
+        if (hasListeners) {
+          notifyListeners();
+        }
+      });
+      return;
+    }
+    notifyListeners();
+  }
+
   Future<void> fetchTvSeriesDetail(int id) async {
     _tvSeriesState = RequestState.Loading;
-    notifyListeners();
+    _notifySafely();
 
     final detailResult = await getTvSeriesDetail.execute(id);
     final recommendationResult = await getTvSeriesRecommendations.execute(id);
@@ -55,12 +77,12 @@ class TvSeriesDetailNotifier extends ChangeNotifier {
       (failure) {
         _tvSeriesState = RequestState.Error;
         _message = failure.message;
-        notifyListeners();
+        _notifySafely();
       },
       (data) {
         _recommendationState = RequestState.Loading;
         _tvSeries = data;
-        notifyListeners();
+        _notifySafely();
 
         recommendationResult.fold(
           (failure) {
@@ -74,7 +96,7 @@ class TvSeriesDetailNotifier extends ChangeNotifier {
         );
 
         _tvSeriesState = RequestState.Loaded;
-        notifyListeners();
+        _notifySafely();
       },
     );
   }
@@ -115,6 +137,6 @@ class TvSeriesDetailNotifier extends ChangeNotifier {
   Future<void> loadWatchlistStatus(int id) async {
     final result = await getWatchlistStatusTvSeries.execute(id);
     _isAddedToWatchlist = result;
-    notifyListeners();
+    _notifySafely();
   }
 }

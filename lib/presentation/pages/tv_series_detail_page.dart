@@ -21,17 +21,15 @@ class TvSeriesDetailPage extends StatefulWidget {
 }
 
 class _TvSeriesDetailPageState extends State<TvSeriesDetailPage> {
-  bool _hasLoaded = false;
-
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    if (!_hasLoaded) {
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
       final notifier = context.read<TvSeriesDetailNotifier>();
       notifier.fetchTvSeriesDetail(widget.id);
       notifier.loadWatchlistStatus(widget.id);
-      _hasLoaded = true;
-    }
+    });
   }
 
   @override

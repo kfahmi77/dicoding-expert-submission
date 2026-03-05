@@ -14,15 +14,13 @@ class PopularTvSeriesPage extends StatefulWidget {
 }
 
 class _PopularTvSeriesPageState extends State<PopularTvSeriesPage> {
-  bool _hasFetched = false;
-
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    if (!_hasFetched) {
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
       context.read<PopularTvSeriesNotifier>().fetchPopularTvSeries();
-      _hasFetched = true;
-    }
+    });
   }
 
   @override

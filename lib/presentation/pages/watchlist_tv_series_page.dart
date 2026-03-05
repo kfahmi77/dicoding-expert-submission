@@ -16,15 +16,26 @@ class WatchlistTvSeriesPage extends StatefulWidget {
 
 class _WatchlistTvSeriesPageState extends State<WatchlistTvSeriesPage>
     with RouteAware {
-  bool _hasFetched = false;
+  bool _isRouteObserverSubscribed = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      context.read<WatchlistTvSeriesNotifier>().fetchWatchlistTvSeries();
+    });
+  }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    if (!_hasFetched) {
-      context.read<WatchlistTvSeriesNotifier>().fetchWatchlistTvSeries();
-      routeObserver.subscribe(this, ModalRoute.of(context)!);
-      _hasFetched = true;
+    if (!_isRouteObserverSubscribed) {
+      final route = ModalRoute.of(context);
+      if (route != null) {
+        routeObserver.subscribe(this, route);
+        _isRouteObserverSubscribed = true;
+      }
     }
   }
 

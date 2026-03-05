@@ -20,17 +20,15 @@ class MovieDetailPage extends StatefulWidget {
 }
 
 class _MovieDetailPageState extends State<MovieDetailPage> {
-  bool _hasLoaded = false;
-
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    if (!_hasLoaded) {
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
       final notifier = context.read<MovieDetailNotifier>();
       notifier.fetchMovieDetail(widget.id);
       notifier.loadWatchlistStatus(widget.id);
-      _hasLoaded = true;
-    }
+    });
   }
 
   @override

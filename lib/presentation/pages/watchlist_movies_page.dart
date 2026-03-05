@@ -16,15 +16,26 @@ class WatchlistMoviesPage extends StatefulWidget {
 
 class _WatchlistMoviesPageState extends State<WatchlistMoviesPage>
     with RouteAware {
-  bool _hasFetched = false;
+  bool _isRouteObserverSubscribed = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      context.read<WatchlistMovieNotifier>().fetchWatchlistMovies();
+    });
+  }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    if (!_hasFetched) {
-      context.read<WatchlistMovieNotifier>().fetchWatchlistMovies();
-      routeObserver.subscribe(this, ModalRoute.of(context)!);
-      _hasFetched = true;
+    if (!_isRouteObserverSubscribed) {
+      final route = ModalRoute.of(context);
+      if (route != null) {
+        routeObserver.subscribe(this, route);
+        _isRouteObserverSubscribed = true;
+      }
     }
   }
 

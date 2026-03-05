@@ -21,19 +21,17 @@ class HomeMoviePage extends StatefulWidget {
 }
 
 class _HomeMoviePageState extends State<HomeMoviePage> {
-  bool _hasFetched = false;
-
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    if (!_hasFetched) {
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
       final notifier = context.read<MovieListNotifier>();
       notifier
         ..fetchNowPlayingMovies()
         ..fetchPopularMovies()
         ..fetchTopRatedMovies();
-      _hasFetched = true;
-    }
+    });
   }
 
   @override

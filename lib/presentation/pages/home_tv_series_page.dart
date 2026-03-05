@@ -21,19 +21,17 @@ class HomeTvSeriesPage extends StatefulWidget {
 }
 
 class _HomeTvSeriesPageState extends State<HomeTvSeriesPage> {
-  bool _hasFetched = false;
-
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    if (!_hasFetched) {
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
       final notifier = context.read<TvSeriesListNotifier>();
       notifier
         ..fetchOnTheAirTvSeries()
         ..fetchPopularTvSeries()
         ..fetchTopRatedTvSeries();
-      _hasFetched = true;
-    }
+    });
   }
 
   @override
