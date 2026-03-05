@@ -27,3 +27,17 @@ flutter test --coverage
 ## Catatan Firebase
 
 Tambahkan konfigurasi Firebase proyek Anda sendiri untuk Android/iOS agar data Analytics dan Crashlytics tercatat ke Firebase Console.
+
+## Lampiran Screenshot
+
+### Build CI (GitHub Actions)
+
+![Build CI Success](assets/attachments/ci-build-success.png)
+
+### Firebase Analytics
+
+![Firebase Analytics Dashboard](assets/attachments/firebase-analytics-dashboard.png)
+
+### Firebase Crashlytics
+
+![Firebase Crashlytics Dashboard](assets/attachments/firebase-crashlytics-dashboard.png)
