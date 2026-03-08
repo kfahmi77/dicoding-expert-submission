@@ -5,8 +5,9 @@ import 'package:tv_series/tv_series.dart';
 
 final locator = GetIt.instance;
 
-void init() {
+Future<void> init() async {
   registerCoreModule(locator);
   registerMovieModule(locator);
   registerTvSeriesModule(locator);
+  await locator.allReady();
 }

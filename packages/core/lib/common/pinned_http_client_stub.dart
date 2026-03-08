@@ -1,3 +1,3 @@
 import 'package:http/http.dart' as http;
 
-http.Client createPinnedHttpClient() => http.Client();
+Future<http.Client> createPinnedHttpClient() async => http.Client();

@@ -8,6 +8,6 @@ void registerCoreModule(GetIt locator) {
     locator.registerLazySingleton<DatabaseHelper>(() => DatabaseHelper());
   }
   if (!locator.isRegistered<http.Client>()) {
-    locator.registerLazySingleton<http.Client>(createPinnedHttpClient);
+    locator.registerSingletonAsync<http.Client>(createPinnedHttpClient);
   }
 }

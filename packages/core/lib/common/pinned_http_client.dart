@@ -4,4 +4,4 @@ import 'pinned_http_client_stub.dart'
     if (dart.library.io) 'pinned_http_client_io.dart'
     as impl;
 
-http.Client createPinnedHttpClient() => impl.createPinnedHttpClient();
+Future<http.Client> createPinnedHttpClient() => impl.createPinnedHttpClient();

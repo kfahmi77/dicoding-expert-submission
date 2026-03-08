@@ -14,7 +14,7 @@ Future<void> main() async {
     () async {
       WidgetsFlutterBinding.ensureInitialized();
       await FirebaseMonitoring.initialize();
-      di.init();
+      await di.init();
       runApp(const MyApp());
     },
     (error, stackTrace) {
